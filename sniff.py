@@ -427,6 +427,22 @@ class Sniffer:
                 pass
         return msg
 
+    def _ask_free(self, prompt: str, max_tokens: int = 512) -> str:
+        """One free-form prose call — no JSON schema, no json_object format.
+
+        Returns the raw text answer; raises on any transport failure so the
+        caller can fall back to quoting saved data verbatim."""
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user",
+                          "content": [{"type": "text", "text": prompt}]}],
+            "temperature": 0.4,
+            "max_tokens": max_tokens,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        out = self._post(payload)
+        return (out["choices"][0]["message"].get("content") or "").strip()
+
 
     # -- public ------------------------------------------------------------------
     def sniff(self, text: str, images: list[str] | None = None) -> dict | None:
@@ -532,6 +548,17 @@ class Sniffer:
                 return None
         del last_exc
         return None
+
+    def describe(self, prompt: str, max_tokens: int = 512) -> str:
+        """Free-form prose call for narrative text (safe-space summaries).
+
+        Returns the model's answer as plain text; raises on transport failure
+        or an empty answer so the caller can fall back to quoting saved data."""
+        self.reload_palette()
+        answer = self._ask_free(prompt, max_tokens=max_tokens)
+        if not answer:
+            raise RuntimeError("model returned no prose")
+        return answer
 
 
 

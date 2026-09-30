@@ -6,11 +6,16 @@
 `session.py` runs a guided EMDR **safe-place** intake over the console: it
 asks where your safe space is, what you see/hear/smell/feel there, who is
 with you, and how calm you are — with follow-ups when an answer is thin, so
-a substantial session gets real detail to work with. It then builds **one
-scent mix** from your own words — up to 3 channels, each with its own
-intensity — and sprays it through the bridge as a single burst. That mix is
-saved to `safe_space.json`; the next run finds it and asks whether you want
-to **return to your safe space** instead of doing intake again.
+a substantial session gets real detail to work with. It then closes on a
+**smell check**: *does this smell like the space?* If not, what's missing gets
+folded into the scene's smells and it asks again until it smells right. The
+finished scene builds **one scent mix** from your own words — up to 3
+channels, each with its own intensity — and sprays it through the bridge as a
+single burst. That mix is saved to `safe_space.json`; the next run finds it
+and asks whether you want to **return to your safe space** instead of doing
+intake again. After any spray or recall it asks one last thing: *did that
+help you remember anything else about the space?* — and anything remembered
+joins the saved scene for good.
 
 `--keyframes N` (N>1) keeps the multi-frame option: an N-frame keyframe
 sequence at a 2-second interval (~60 s of breathing-paced scent for N=30),
@@ -82,11 +87,52 @@ gave are saved to `safe_space.json`. The next time you run
     quiet creek, rain just stopped)
     Would you like to return to your safe space? [Y/n]
 
-Saying yes recites what is in the file — *remember: petrichor@0.90 +
-evergreen@0.50 + smoky@0.30 to set the scene with the stuff you told it*,
-followed by your own place/sounds/smells/feeling lines, all quoted from the
-file, nothing invented — and re-sprays the saved mix in one burst. Saying no
-runs a fresh intake, which overwrites the file when it completes.
+Saying yes reports the space back two ways: **an LLM-written summary** — a
+warm second-person description woven from your own answers ("You are in
+your childhood living room, bathed in amber light...") — followed by your
+raw saved words quoted line-by-line from the file. The summary is the main
+output; the raw answers underneath are the source of truth.
+
+Because this is for real therapeutic use, the summary is **hallucination-
+checked**: every content word it uses must trace back to something you
+actually said. Atmosphere and "vibes" are allowed; new objects, people,
+places, foods, or scents are not. If any invented words slip through, the
+run prints a `CHECK:` line naming them so you (or the therapist) can see
+exactly what to distrust — the summary is never silently trusted.
+
+Then it re-sprays the saved mix in one burst. Saying no runs a fresh intake,
+which overwrites the file when it completes. Either way, at the end it asks:
+
+    Did that help you remember anything else about the space? Type what came
+    back, or press enter to leave it as is.
+
+Anything typed there is folded into the saved scene under *What came back
+later* and shows up in every future recall, summary, and smell line.
+
+## Possibilities
+
+The intake asks the same questions a therapist would ask, pushes for detail
+when an answer is thin, and turns the result into a scent mix to associate
+with the safe space — or a sequence of mixes for a more immersive scene,
+though a single spray has proven the better approach. The space and its
+scent are saved so the person can come back to it at any time.
+
+Where this could go:
+
+- **Phone app.** A phone app fits this well: safe spaces stored as saved
+  definitions — multiple per person — that you can return to at any time,
+  out in the field when PTSD symptoms start to show up, hopefully making
+  treatment more effective. The console's `safe_space.json` is already a
+  complete portable definition of one space (scene words + mix); an app
+  would just hold many of them.
+- **Generated audio for keyframe tracks.** With the multi-frame (`--keyframes`)
+  mode, an LLM could generate a calm narrated audio clip matching the scene —
+  built from the same saved answers as the summary — so the drifting scent
+  sequence and a spoken guided visualization play together.
+- **Therapist's desk.** A psychologist running the program in session: same
+  questions, same scent generation; the only change to the therapy is that a
+  Core10 sits on the desk in front of the patient and aromas emit as the
+  scene is built.
 
 ## Testing without spraying cartridges
 
