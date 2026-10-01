@@ -132,7 +132,7 @@ Where this could go:
 - **Therapist's desk.** A psychologist running the program in session: same
   questions, same scent generation; the only change to the therapy is that a
   Core10 sits on the desk in front of the patient and aromas emit as the
-  scene is built.
+  scene is built. It could also be used in telehealth sessions.
 
 ## Testing without spraying cartridges
 
